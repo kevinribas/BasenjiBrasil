@@ -15,12 +15,12 @@ export default function PublicLegalLayout({
         <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-sm border-b border-stone-200/80 shadow-xs">
           <div className="flex items-center justify-between h-16 px-4">
             <Link href="/" className="flex items-center gap-2.5 active:scale-95 transition-transform">
-              <div className="w-9 h-9 relative rounded-full overflow-hidden border border-amber-300 shadow-xs">
+              <div className="w-9 h-9 relative rounded-full overflow-hidden border border-amber-300 shadow-xs bg-white">
                 <Image
                   src="/images/logo.png"
                   alt="Basenji Brasil"
                   fill
-                  className="object-cover"
+                  className="object-contain"
                   priority
                 />
               </div>

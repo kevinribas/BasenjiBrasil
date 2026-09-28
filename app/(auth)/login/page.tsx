@@ -33,12 +33,12 @@ export default function LoginPage() {
     <div className="w-full max-w-sm flex flex-col items-center gap-8">
       {/* Logo */}
       <div className="flex flex-col items-center gap-4">
-        <div className="w-36 h-36 relative rounded-full overflow-hidden shadow-2xl border-4 border-amber-300">
+        <div className="w-36 h-36 relative rounded-full overflow-hidden shadow-2xl border-4 border-amber-300 bg-white">
           <Image
             src="/images/logo.png"
             alt="Basenji Brasil Logo"
             fill
-            className="object-cover"
+            className="object-contain p-1"
             priority
           />
         </div>

@@ -8,8 +8,13 @@ export const metadata: Metadata = {
   title: 'Basenji Brasil',
   description: 'A rede social dos cães Basenji no Brasil',
   icons: {
-    icon: '/images/logo.png',
-    apple: '/images/logo.png',
+    icon: [
+      { url: '/icon.png', type: 'image/png' },
+      { url: '/images/logo.png', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/apple-icon.png', sizes: '180x180', type: 'image/png' },
+    ],
   },
   manifest: '/manifest.json',
   appleWebApp: {
