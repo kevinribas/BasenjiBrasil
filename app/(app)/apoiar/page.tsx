@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowLeft, Copy, Check, Heart, Sparkles, ShieldCheck, Server, Coffee } from 'lucide-react';
+import { ArrowLeft, Copy, Check, Heart, Sparkles, Coffee } from 'lucide-react';
 
 const CHAVE_PIX = '+5555999010131';
 
@@ -62,24 +62,6 @@ export default function ApoiarPage() {
             criada exclusivamente para unir tutores, organizar encontros e celebrar a vida dos
             nossos amados cães.
           </p>
-
-          <blockquote className="mt-3 pl-3 border-l-2 border-amber-400 text-xs text-stone-500 italic leading-relaxed">
-            &ldquo;Se você gosta da rede e quer nos ajudar a manter os servidores ativos e trazer
-            novas funcionalidades para os nossos cães, qualquer contribuição voluntária é super
-            bem-vinda.&rdquo;
-          </blockquote>
-
-          {/* O que o apoio viabiliza */}
-          <div className="mt-4 pt-3 border-t border-amber-200/40 grid grid-cols-2 gap-2 text-[11px] text-stone-600">
-            <div className="flex items-center gap-1.5">
-              <Server className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-              <span>Servidores & Banco</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <ShieldCheck className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-              <span>Domínio & Segurança</span>
-            </div>
-          </div>
         </div>
 
         {/* Card do QR Code e Chave Pix */}
