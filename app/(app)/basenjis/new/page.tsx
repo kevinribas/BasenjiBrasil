@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/client';
 import { Camera, Loader2, X } from 'lucide-react';
 import Image from 'next/image';
 import ImageCropper from '@/components/ui/ImageCropper';
+import { gerarStoragePath } from '@/lib/utils';
 
 type CropperState = { open: false } | { open: true; rawSrc: string };
 
@@ -73,7 +74,7 @@ export default function NewBasenjiPage() {
     const fileToUpload = photoFile || (photoBlob ? new File([photoBlob], 'dog-photo.webp', { type: 'image/webp' }) : null);
 
     if (fileToUpload) {
-      const storagePath = `${user.id}/${Date.now()}-${nome.trim().replace(/\s+/g, '_')}.webp`;
+      const storagePath = gerarStoragePath(user.id, nome, 'webp');
 
       console.log('[Upload] Enviando foto recortada para:', storagePath);
 

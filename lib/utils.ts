@@ -60,10 +60,51 @@ export function extrairPathStorage(
     const marker = `/storage/v1/object/public/${bucket}/`;
     const idx = publicUrl.indexOf(marker);
     if (idx === -1) return null;
-    return publicUrl.slice(idx + marker.length);
+    const raw = publicUrl.slice(idx + marker.length);
+    try {
+      return decodeURIComponent(raw);
+    } catch {
+      return raw;
+    }
   } catch {
     return null;
   }
+}
+
+/**
+ * Gera um caminho seguro de arquivo para o Supabase Storage.
+ * Garante chaves válidas sem acentos, espaços ou caracteres especiais,
+ * combinando timestamp, UUID e sanitização rigorosa.
+ */
+export function gerarStoragePath(
+  userId: string,
+  nomeOuArquivo?: string | null,
+  ext: string = 'webp'
+): string {
+  const uniqueId = typeof crypto !== 'undefined' && crypto.randomUUID
+    ? crypto.randomUUID()
+    : Math.random().toString(36).substring(2, 10);
+
+  let sanitizedSlug = '';
+  if (nomeOuArquivo) {
+    const rawName = nomeOuArquivo.includes('.')
+      ? nomeOuArquivo.slice(0, nomeOuArquivo.lastIndexOf('.'))
+      : nomeOuArquivo;
+    sanitizedSlug = rawName
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '') // remove acentos
+      .toLowerCase()
+      .replace(/[^a-z0-9_-]/g, '_')   // substitui símbolos e espaços por _
+      .replace(/_+/g, '_')            // colapsa múltiplos underlines
+      .replace(/^_+|_+$/g, '')        // remove underlines das pontas
+      .slice(0, 30);
+  }
+
+  const fileName = sanitizedSlug
+    ? `${Date.now()}-${uniqueId}-${sanitizedSlug}.${ext}`
+    : `${Date.now()}-${uniqueId}.${ext}`;
+
+  return `${userId}/${fileName}`;
 }
 
 // ─── Canvas crop ─────────────────────────────────────────────────────────────

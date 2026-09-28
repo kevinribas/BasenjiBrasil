@@ -6,7 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { createClient } from '@/lib/supabase/client';
 import { ESTADOS_BR, type Basenji } from '@/types';
-import { extrairPathStorage } from '@/lib/utils';
+import { extrairPathStorage, gerarStoragePath } from '@/lib/utils';
 import ImageCropper from '@/components/ui/ImageCropper';
 import {
   ArrowLeft, Camera, Loader2, Trash2, X, AlertTriangle,
@@ -140,8 +140,7 @@ export default function EditBasenjiPage() {
         }
       }
 
-      const ext = 'webp';
-      const storagePath = `${currentUserId}/${Date.now()}-${nome.trim().replace(/\s+/g, '_')}.${ext}`;
+      const storagePath = gerarStoragePath(currentUserId, nome, 'webp');
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from('basenjis')
         .upload(storagePath, fileToUpload, { upsert: true, contentType: 'image/webp' });
