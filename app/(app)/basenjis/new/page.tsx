@@ -20,6 +20,7 @@ export default function NewBasenjiPage() {
   const [bio, setBio] = useState('');
   const [dataNasc, setDataNasc] = useState('');
 
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoBlob, setPhotoBlob] = useState<Blob | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [cropperState, setCropperState] = useState<CropperState>({ open: false });
@@ -36,8 +37,10 @@ export default function NewBasenjiPage() {
     if (fileInputRef.current) fileInputRef.current.value = '';
   }
 
-  const handleCropComplete = useCallback((blob: Blob, preview: string) => {
+  const handleCropComplete = useCallback((blob: Blob, preview: string, file: File) => {
+    const croppedFile = file || new File([blob], 'dog-photo.webp', { type: 'image/webp' });
     setPhotoBlob(blob);
+    setPhotoFile(croppedFile);
     setPhotoPreview(preview);
     setCropperState({ open: false });
   }, []);
@@ -46,7 +49,9 @@ export default function NewBasenjiPage() {
 
   function removePhoto() {
     setPhotoBlob(null);
+    setPhotoFile(null);
     setPhotoPreview(null);
+    if (fileInputRef.current) fileInputRef.current.value = '';
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -64,15 +69,20 @@ export default function NewBasenjiPage() {
 
     let foto_url: string | null = null;
 
-    // ── Upload de foto (blob recortado) ──────────────────────────────────
-    if (photoBlob) {
+    // ── Upload de foto (arquivo File / Blob recortado) ────────────────────
+    const fileToUpload = photoFile || (photoBlob ? new File([photoBlob], 'dog-photo.webp', { type: 'image/webp' }) : null);
+
+    if (fileToUpload) {
       const storagePath = `${user.id}/${Date.now()}-${nome.trim().replace(/\s+/g, '_')}.webp`;
 
-      console.log('[Upload] Iniciando upload para:', storagePath);
+      console.log('[Upload] Enviando foto recortada para:', storagePath);
 
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from('basenjis')
-        .upload(storagePath, photoBlob, { upsert: true, contentType: 'image/webp' });
+        .upload(storagePath, fileToUpload, {
+          upsert: true,
+          contentType: 'image/webp',
+        });
 
       if (uploadError) {
         console.error('[Upload] Erro ao enviar foto:', uploadError);

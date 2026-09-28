@@ -107,8 +107,20 @@ export async function getCroppedBlob(
   return new Promise((resolve, reject) => {
     canvas.toBlob(
       (blob) => {
-        if (blob) resolve(blob);
-        else reject(new Error('canvas.toBlob retornou null'));
+        if (blob) {
+          resolve(blob);
+        } else if (outputMime !== 'image/jpeg') {
+          canvas.toBlob(
+            (fallbackBlob) => {
+              if (fallbackBlob) resolve(fallbackBlob);
+              else reject(new Error('canvas.toBlob retornou null'));
+            },
+            'image/jpeg',
+            quality
+          );
+        } else {
+          reject(new Error('canvas.toBlob retornou null'));
+        }
       },
       outputMime,
       quality

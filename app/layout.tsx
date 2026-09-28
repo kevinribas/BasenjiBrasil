@@ -6,7 +6,11 @@ const geist = Geist({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'Basenji Brasil',
-  description: 'A rede social da comunidade Basenji no Brasil',
+  description: 'A rede social dos cães Basenji no Brasil',
+  icons: {
+    icon: '/images/logo.png',
+    apple: '/images/logo.png',
+  },
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,

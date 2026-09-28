@@ -40,6 +40,7 @@ export default function EditBasenjiPage() {
   // ── Foto
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [photoBlob, setPhotoBlob] = useState<Blob | null>(null);
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [cropperState, setCropperState] = useState<CropperState>({ open: false });
 
   // ── UI
@@ -97,8 +98,10 @@ export default function EditBasenjiPage() {
     if (fileInputRef.current) fileInputRef.current.value = '';
   }
 
-  const handleCropComplete = useCallback((blob: Blob, preview: string) => {
+  const handleCropComplete = useCallback((blob: Blob, preview: string, file: File) => {
+    const croppedFile = file || new File([blob], 'dog-photo.webp', { type: 'image/webp' });
     setPhotoBlob(blob);
+    setPhotoFile(croppedFile);
     setPhotoPreview(preview);
     setCropperState({ open: false });
   }, []);
@@ -109,7 +112,9 @@ export default function EditBasenjiPage() {
 
   function removePhoto() {
     setPhotoBlob(null);
+    setPhotoFile(null);
     setPhotoPreview(null);
+    if (fileInputRef.current) fileInputRef.current.value = '';
   }
 
   // ── Salvar edição ─────────────────────────────────────────────────────────
@@ -123,8 +128,10 @@ export default function EditBasenjiPage() {
 
     let foto_url = basenji.foto_url; // mantém a atual por padrão
 
-    // Fez upload de nova foto
-    if (photoBlob) {
+    // Fez upload de nova foto (arquivo File / Blob recortado)
+    const fileToUpload = photoFile || (photoBlob ? new File([photoBlob], 'dog-photo.webp', { type: 'image/webp' }) : null);
+
+    if (fileToUpload) {
       // Remove foto antiga do Storage (best-effort)
       if (basenji.foto_url) {
         const oldPath = extrairPathStorage(basenji.foto_url);
@@ -137,7 +144,7 @@ export default function EditBasenjiPage() {
       const storagePath = `${currentUserId}/${Date.now()}-${nome.trim().replace(/\s+/g, '_')}.${ext}`;
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from('basenjis')
-        .upload(storagePath, photoBlob, { upsert: true, contentType: 'image/webp' });
+        .upload(storagePath, fileToUpload, { upsert: true, contentType: 'image/webp' });
 
       if (uploadError) {
         console.error('[EditBasenji] Upload falhou:', uploadError);
@@ -151,7 +158,7 @@ export default function EditBasenjiPage() {
     }
 
     // Removeu a foto sem escolher nova
-    if (!photoPreview && !photoBlob) {
+    if (!photoPreview && !fileToUpload) {
       foto_url = null;
     }
 

@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Basenji } from '@/types';
-import { MapPin, Venus, Mars, Clock, Pencil } from 'lucide-react';
+import { MapPin, Venus, Mars, Cake, Pencil } from 'lucide-react';
 import { calcularIdade } from '@/lib/utils';
 
 interface BasenjiCardProps {
@@ -69,8 +69,8 @@ export default function BasenjiCard({ basenji, currentUserId }: BasenjiCardProps
 
         {/* Idade */}
         {idade && (
-          <div className="flex items-center gap-1 mt-1.5 text-xs text-amber-700">
-            <Clock className="w-3 h-3" />
+          <div className="flex items-center gap-1.5 mt-1.5 text-xs text-amber-800 bg-amber-50/80 px-2 py-0.5 rounded-md w-fit font-medium border border-amber-200/50">
+            <Cake className="w-3.5 h-3.5 text-amber-600 shrink-0" />
             <span>{idade}</span>
           </div>
         )}

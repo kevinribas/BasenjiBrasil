@@ -10,7 +10,7 @@ interface ImageCropperProps {
   imageSrc: string;
   /** Razão de aspecto do recorte. Padrão 1 (quadrado) */
   aspect?: number;
-  onCropComplete: (blob: Blob, previewUrl: string) => void;
+  onCropComplete: (blob: Blob, previewUrl: string, file: File) => void;
   onCancel: () => void;
 }
 
@@ -40,8 +40,9 @@ export default function ImageCropper({
     setProcessing(true);
     try {
       const blob = await getCroppedBlob(imageSrc, croppedAreaPixels, 'image/webp', 0.88);
+      const croppedFile = new File([blob], 'dog-photo.webp', { type: 'image/webp' });
       const previewUrl = URL.createObjectURL(blob);
-      onCropComplete(blob, previewUrl);
+      onCropComplete(blob, previewUrl, croppedFile);
     } catch (err) {
       console.error('[ImageCropper] Erro ao recortar:', err);
     } finally {
