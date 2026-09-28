@@ -50,19 +50,41 @@ export default function NewBasenjiPage() {
 
     let foto_url: string | null = null;
 
-    // Upload photo if selected
+    // ── Upload de foto ──────────────────────────────────────────
     if (photoFile) {
-      const ext = photoFile.name.split('.').pop();
-      const path = `${user.id}/${Date.now()}.${ext}`;
-      const { error: uploadError } = await supabase.storage
-        .from('basenjis')
-        .upload(path, photoFile, { upsert: true });
+      // Sanitiza nome: remove espaços e caracteres problemáticos
+      const safeName = photoFile.name
+        .replace(/\s+/g, '_')
+        .replace(/[^a-zA-Z0-9._-]/g, '');
+      const ext = safeName.split('.').pop() ?? 'jpg';
+      const storagePath = `${user.id}/${Date.now()}-${safeName}`;
 
-      if (!uploadError) {
-        const { data: urlData } = supabase.storage.from('basenjis').getPublicUrl(path);
-        foto_url = urlData.publicUrl;
+      console.log('[Upload] Iniciando upload para:', storagePath);
+
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('basenjis')
+        .upload(storagePath, photoFile, {
+          upsert: true,
+          contentType: photoFile.type,
+        });
+
+      if (uploadError) {
+        // Falha de upload → aborta o cadastro e avisa o usuário
+        console.error('[Upload] Erro ao enviar foto:', uploadError);
+        setError(`Falha no upload da foto: ${uploadError.message}. Verifique se o bucket "basenjis" existe e está público.`);
+        setLoading(false);
+        return;
       }
+
+      // Usa o path confirmado pelo Supabase (uploadData.path) para gerar a URL pública
+      const { data: urlData } = supabase.storage
+        .from('basenjis')
+        .getPublicUrl(uploadData.path);
+
+      foto_url = urlData.publicUrl;
+      console.log('[Upload] foto_url gerada:', foto_url);
     }
+    // ────────────────────────────────────────────────────────────
 
     const { error: insertError } = await supabase.from('basenjis').insert({
       dono_id: user.id,
@@ -75,7 +97,8 @@ export default function NewBasenjiPage() {
     });
 
     if (insertError) {
-      setError('Erro ao cadastrar. Tente novamente.');
+      console.error('[Insert] Erro ao cadastrar basenji:', insertError);
+      setError(`Erro ao cadastrar: ${insertError.message}`);
       setLoading(false);
       return;
     }

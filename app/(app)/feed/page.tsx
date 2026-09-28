@@ -21,20 +21,45 @@ export default function FeedPage() {
 
   async function fetchBasenjis() {
     setLoading(true);
-    let query = supabase
+
+    // Usa alias explícito 'profiles:dono_id' para o join pela FK correta
+    const { data, error } = await supabase
       .from('basenjis')
-      .select('*, profiles(id, nome, avatar_url, cidade, estado)')
+      .select(`
+        *,
+        profiles:dono_id (
+          id,
+          nome,
+          avatar_url,
+          cidade,
+          estado
+        )
+      `)
       .order('created_at', { ascending: false });
 
-    if (filterEstado) {
-      query = query.eq('profiles.estado', filterEstado);
-    }
-    if (filterCidade) {
-      query = query.ilike('profiles.cidade', `%${filterCidade}%`);
+    if (error) {
+      console.error('[Feed] Erro ao buscar basenjis:', error);
+      setLoading(false);
+      return;
     }
 
-    const { data } = await query;
-    setBasenjis((data as Basenji[]) ?? []);
+    let result = (data as Basenji[]) ?? [];
+
+    // Filtragem client-side: o PostgREST não suporta .eq() em colunas
+    // de tabelas relacionadas (joined) no nível da query pai.
+    if (filterEstado) {
+      result = result.filter(
+        (b) => b.profiles?.estado === filterEstado
+      );
+    }
+    if (filterCidade) {
+      const termo = filterCidade.toLowerCase();
+      result = result.filter(
+        (b) => b.profiles?.cidade?.toLowerCase().includes(termo)
+      );
+    }
+
+    setBasenjis(result);
     setLoading(false);
   }
 
