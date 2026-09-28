@@ -33,10 +33,15 @@ export async function proxy(request: NextRequest) {
   const isAuthRoute = url.pathname.startsWith('/login');
   const isApiRoute = url.pathname.startsWith('/api');
   const isCallbackRoute = url.pathname.startsWith('/auth/callback');
+  const isPublicRoute =
+    url.pathname === '/privacidade' ||
+    url.pathname.startsWith('/privacidade/') ||
+    url.pathname === '/termos' ||
+    url.pathname.startsWith('/termos/');
   const isOnboarding = url.pathname.startsWith('/onboarding');
 
   // Redirect unauthenticated users to login
-  if (!user && !isAuthRoute && !isApiRoute && !isCallbackRoute) {
+  if (!user && !isAuthRoute && !isApiRoute && !isCallbackRoute && !isPublicRoute) {
     url.pathname = '/login';
     return NextResponse.redirect(url);
   }

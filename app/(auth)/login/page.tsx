@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import { useState } from 'react';
 
@@ -81,10 +82,15 @@ export default function LoginPage() {
       </div>
 
       {/* Footer */}
-      <p className="text-amber-300/70 text-xs text-center max-w-xs">
+      <p className="text-amber-300/80 text-xs text-center max-w-xs leading-relaxed">
         Ao entrar, você concorda com os nossos{' '}
-        <span className="underline">Termos de Uso</span> e{' '}
-        <span className="underline">Política de Privacidade</span>.
+        <Link href="/termos" className="underline hover:text-white font-medium transition-colors">
+          Termos de Uso
+        </Link>{' '}
+        e{' '}
+        <Link href="/privacidade" className="underline hover:text-white font-medium transition-colors">
+          Política de Privacidade
+        </Link>.
       </p>
     </div>
   );
