@@ -4,7 +4,6 @@ import { createClient } from '@/lib/supabase/server';
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get('code');
-  const next = requestUrl.searchParams.get('next') ?? '/feed';
 
   // Garante que o redirecionamento permaneça no domínio real atual (ex: https://basenjibrasil.com)
   const forwardedHost = request.headers.get('x-forwarded-host');
@@ -38,7 +37,8 @@ export async function GET(request: NextRequest) {
         }
       }
 
-      return NextResponse.redirect(new URL(next, origin));
+      // Redireciona explicitamente para /feed, limpando qualquer parâmetro residual de autenticação (code, etc.)
+      return NextResponse.redirect(new URL('/feed', origin));
     }
   }
 
