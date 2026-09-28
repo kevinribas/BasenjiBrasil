@@ -32,7 +32,9 @@ export async function proxy(request: NextRequest) {
   const url = request.nextUrl.clone();
   const isAuthRoute = url.pathname.startsWith('/login');
   const isApiRoute = url.pathname.startsWith('/api');
-  const isCallbackRoute = url.pathname.startsWith('/auth/callback');
+  const isCallbackRoute =
+    url.pathname.startsWith('/auth/callback') ||
+    url.pathname.startsWith('/api/auth/callback');
   const isPublicRoute =
     url.pathname === '/privacidade' ||
     url.pathname.startsWith('/privacidade/') ||
@@ -40,16 +42,24 @@ export async function proxy(request: NextRequest) {
     url.pathname.startsWith('/termos/');
   const isOnboarding = url.pathname.startsWith('/onboarding');
 
-  // Redirect unauthenticated users to login
+  // Redireciona usuários não autenticados para login, transferindo todos os cookies de sessão
   if (!user && !isAuthRoute && !isApiRoute && !isCallbackRoute && !isPublicRoute) {
     url.pathname = '/login';
-    return NextResponse.redirect(url);
+    const redirectResponse = NextResponse.redirect(url);
+    supabaseResponse.cookies.getAll().forEach((cookie) => {
+      redirectResponse.cookies.set(cookie);
+    });
+    return redirectResponse;
   }
 
-  // Redirect authenticated users away from login
+  // Redireciona usuários autenticados para fora de /login, transferindo todos os cookies de sessão
   if (user && isAuthRoute) {
     url.pathname = '/feed';
-    return NextResponse.redirect(url);
+    const redirectResponse = NextResponse.redirect(url);
+    supabaseResponse.cookies.getAll().forEach((cookie) => {
+      redirectResponse.cookies.set(cookie);
+    });
+    return redirectResponse;
   }
 
   return supabaseResponse;
