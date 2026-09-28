@@ -1,39 +1,39 @@
-import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
+import { cookies } from 'next/headers';
+import { NextResponse } from 'next/server';
 
-export async function GET(request: NextRequest) {
-  const requestUrl = new URL(request.url);
-  const code = requestUrl.searchParams.get('code');
+export async function GET(request: Request) {
+  const { searchParams, origin } = new URL(request.url);
+  const code = searchParams.get('code');
+  const next = searchParams.get('next') ?? '/feed';
 
-  // Garante que o redirecionamento permaneça no domínio real atual (ex: https://basenjibrasil.com)
+  // Garante que o redirecionamento permaneça no domínio real de produção
   const forwardedHost = request.headers.get('x-forwarded-host');
-  const forwardedProto = request.headers.get('x-forwarded-proto') ?? 'https';
   const isLocalEnv = process.env.NODE_ENV === 'development';
-  const origin = isLocalEnv
-    ? requestUrl.origin
+  const currentOrigin = isLocalEnv
+    ? origin
     : forwardedHost
-      ? `${forwardedProto}://${forwardedHost}`
-      : requestUrl.origin;
+      ? `https://${forwardedHost}`
+      : origin;
 
   if (code) {
-    // 1. Cria o objeto de resposta de redirecionamento onde os cookies serão diretamente injetados
-    const targetUrl = new URL('/feed', origin);
-    const response = NextResponse.redirect(targetUrl);
-
-    // 2. Instancia createServerClient com controle síncrono e direto sobre os cookies da resposta
+    const cookieStore = await cookies();
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
       {
         cookies: {
           getAll() {
-            return request.cookies.getAll();
+            return cookieStore.getAll();
           },
           setAll(cookiesToSet) {
-            cookiesToSet.forEach(({ name, value, options }) => {
-              request.cookies.set(name, value);
-              response.cookies.set(name, value, options);
-            });
+            try {
+              cookiesToSet.forEach(({ name, value, options }) =>
+                cookieStore.set(name, value, options)
+              );
+            } catch {
+              // Contexto de Server Component / Route Handler
+            }
           },
         },
       }
@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
 
     if (!error) {
-      // 3. Verifica se o usuário precisa de onboarding (cidade/estado ainda não preenchidos)
+      // Valida se o perfil do utilizador já tem cidade e estado preenchidos
       const {
         data: { user },
       } = await supabase.auth.getUser();
@@ -52,24 +52,17 @@ export async function GET(request: NextRequest) {
           .from('profiles')
           .select('cidade, estado')
           .eq('id', user.id)
-          .single();
+          .maybeSingle();
 
-        if (!profile?.cidade || !profile?.estado) {
-          const onboardingResponse = NextResponse.redirect(new URL('/onboarding', origin));
-          // Transfere todos os cookies de sessão injetados para a resposta de onboarding
-          response.cookies.getAll().forEach((cookie) => {
-            onboardingResponse.cookies.set(cookie);
-          });
-          return onboardingResponse;
-        }
+        const destination = !profile?.cidade || !profile?.estado ? '/onboarding' : next;
+        return NextResponse.redirect(`${currentOrigin}${destination}`);
       }
 
-      // 4. Retorna a resposta HTTP contendo os cabeçalhos Set-Cookie para garantir sincronização imediata
-      return response;
+      return NextResponse.redirect(`${currentOrigin}${next}`);
     }
 
-    console.error('[OAuth Callback] Erro na troca de código:', error);
+    console.error('Erro ao trocar código por sessão no Supabase:', error);
   }
 
-  return NextResponse.redirect(new URL('/login?error=auth_callback_failed', origin));
+  return NextResponse.redirect(`${currentOrigin}/login?error=auth_callback_failed`);
 }
