@@ -1,3 +1,5 @@
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
 import { Basenji } from '@/types';
@@ -16,15 +18,22 @@ export default function BasenjiCard({ basenji, currentUserId }: BasenjiCardProps
   const isDono = currentUserId != null && currentUserId === basenji.dono_id;
 
   return (
-    <article className="bg-white rounded-2xl overflow-hidden shadow-sm border border-stone-100 active:scale-[0.99] transition-transform">
+    <article className="group relative bg-white rounded-2xl overflow-hidden shadow-sm border border-stone-100 hover:shadow-md hover:border-amber-200/60 active:scale-[0.99] transition-all cursor-pointer">
+      {/* Stretched link cobrindo todo o card para navegar aos detalhes do cão */}
+      <Link
+        href={`/basenjis/${basenji.id}`}
+        className="absolute inset-0 z-0"
+        aria-label={`Ver detalhes de ${basenji.nome}`}
+      />
+
       {/* Photo */}
-      <div className="relative w-full h-52 bg-amber-50">
+      <div className="relative w-full h-52 bg-amber-50 overflow-hidden pointer-events-none">
         {basenji.foto_url ? (
           <Image
             src={basenji.foto_url}
             alt={basenji.nome}
             fill
-            className="object-cover"
+            className="object-cover group-hover:scale-105 transition-transform duration-300"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-5xl">
@@ -33,30 +42,37 @@ export default function BasenjiCard({ basenji, currentUserId }: BasenjiCardProps
         )}
 
         {/* Sex badge */}
-        <div className={`absolute top-3 right-3 flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold shadow
-          ${basenji.sexo === 'macho' ? 'bg-blue-100 text-blue-700' : 'bg-pink-100 text-pink-700'}`}
+        <div
+          className={`absolute top-3 right-3 flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold shadow pointer-events-none ${
+            basenji.sexo === 'macho' ? 'bg-blue-100 text-blue-700' : 'bg-pink-100 text-pink-700'
+          }`}
         >
           {basenji.sexo === 'macho' ? <Mars className="w-3.5 h-3.5" /> : <Venus className="w-3.5 h-3.5" />}
           {basenji.sexo === 'macho' ? 'Macho' : 'Fêmea'}
         </div>
+      </div>
 
-        {/* Edit button — only for owner */}
-        {isDono && (
+      {/* Edit button — only for owner */}
+      {isDono && (
+        <div className="absolute top-3 left-3 z-10">
           <Link
             href={`/basenjis/${basenji.id}/edit`}
-            className="absolute top-3 left-3 flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold bg-white/90 text-stone-600 shadow hover:bg-white active:scale-95 transition-all"
+            onClick={(e) => e.stopPropagation()}
+            className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-white/90 text-stone-700 shadow hover:bg-white active:scale-95 transition-all"
           >
             <Pencil className="w-3 h-3" />
             Editar
           </Link>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Info */}
-      <div className="p-4">
+      <div className="p-4 pointer-events-none">
         <div className="flex items-start justify-between gap-2">
           <div>
-            <h3 className="font-bold text-stone-800 text-lg leading-tight">{basenji.nome}</h3>
+            <h3 className="font-bold text-stone-800 text-lg leading-tight group-hover:text-amber-800 transition-colors">
+              {basenji.nome}
+            </h3>
             <p className="text-sm text-stone-500">{basenji.cor}</p>
           </div>
           {profile?.cidade && profile.estado && (
