@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { Profile, Basenji } from '@/types';
 import Image from 'next/image';
-import { LogOut, MapPin, PlusCircle } from 'lucide-react';
+import { LogOut, MapPin, PlusCircle, Heart, ChevronRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import BasenjiCard from '@/components/features/feed/BasenjiCard';
@@ -82,6 +82,26 @@ export default function ProfilePage() {
           </button>
         </div>
       </div>
+
+      {/* Banner de Apoio à Comunidade */}
+      <Link
+        href="/apoiar"
+        className="mb-5 flex items-center justify-between p-4 bg-gradient-to-r from-rose-50/90 via-amber-50/60 to-rose-50/90 rounded-2xl border border-rose-200/70 shadow-xs active:scale-[0.99] transition-all group"
+      >
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="w-10 h-10 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center shrink-0 shadow-inner group-hover:scale-105 transition-transform">
+            <Heart className="w-5 h-5 fill-rose-500 text-rose-500" />
+          </div>
+          <div className="min-w-0">
+            <h4 className="font-bold text-stone-800 text-sm leading-tight flex items-center gap-1.5">
+              Apoiar o Basenji Brasil
+              <span className="text-[10px] font-bold px-1.5 py-0.2 bg-rose-200/70 text-rose-800 rounded-full">Pix</span>
+            </h4>
+            <p className="text-xs text-stone-500 truncate mt-0.5">Ajude a manter a rede comunitária ativa</p>
+          </div>
+        </div>
+        <ChevronRight className="w-5 h-5 text-stone-400 group-hover:text-rose-500 group-hover:translate-x-0.5 transition-all shrink-0 ml-2" />
+      </Link>
 
       {/* My Basenjis */}
       <div className="flex items-center justify-between mb-3">

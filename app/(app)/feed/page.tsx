@@ -4,7 +4,8 @@ import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { Basenji, ESTADOS_BR } from '@/types';
 import BasenjiCard from '@/components/features/feed/BasenjiCard';
-import { SlidersHorizontal, X } from 'lucide-react';
+import Link from 'next/link';
+import { SlidersHorizontal, X, Heart } from 'lucide-react';
 
 export default function FeedPage() {
   const supabase = createClient();
@@ -167,6 +168,20 @@ export default function FeedPage() {
           ))}
         </div>
       )}
+
+      {/* Footer Comunitário */}
+      <footer className="mt-8 mb-4 pt-4 border-t border-stone-200/60 text-center">
+        <p className="text-xs text-stone-400">
+          Basenji Brasil · Comunidade sem fins lucrativos 🐾
+        </p>
+        <Link
+          href="/apoiar"
+          className="inline-flex items-center gap-1.5 mt-1.5 text-xs font-semibold text-rose-600 hover:text-rose-700 active:scale-95 transition-all"
+        >
+          <Heart className="w-3.5 h-3.5 fill-rose-500 text-rose-500" />
+          <span>Apoiar a manutenção da rede</span>
+        </Link>
+      </footer>
     </div>
   );
 }
