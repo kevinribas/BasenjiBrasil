@@ -32,10 +32,11 @@ export async function proxy(request: NextRequest) {
   const url = request.nextUrl.clone();
   const isAuthRoute = url.pathname.startsWith('/login');
   const isApiRoute = url.pathname.startsWith('/api');
+  const isCallbackRoute = url.pathname.startsWith('/auth/callback');
   const isOnboarding = url.pathname.startsWith('/onboarding');
 
   // Redirect unauthenticated users to login
-  if (!user && !isAuthRoute && !isApiRoute) {
+  if (!user && !isAuthRoute && !isApiRoute && !isCallbackRoute) {
     url.pathname = '/login';
     return NextResponse.redirect(url);
   }
