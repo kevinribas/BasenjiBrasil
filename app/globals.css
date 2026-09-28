@@ -16,7 +16,7 @@
   }
 
   body {
-    @apply min-h-screen bg-amber-50;
+    @apply min-h-screen;
     overscroll-behavior: none;
   }
 

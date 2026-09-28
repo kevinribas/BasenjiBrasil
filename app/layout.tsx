@@ -30,7 +30,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-BR">
-      <body className={`${geist.className} bg-amber-50 text-stone-900 antialiased`}>
+      <body className={`${geist.className} bg-stone-100 text-stone-900 antialiased`}>
         {children}
       </body>
     </html>
