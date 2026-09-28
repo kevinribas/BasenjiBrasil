@@ -1,0 +1,37 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --color-primary: #b45309;
+    --color-primary-light: #d97706;
+    --color-secondary: #78350f;
+    --color-bg: #fffbeb;
+    --color-surface: #ffffff;
+    --safe-area-bottom: env(safe-area-inset-bottom);
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    @apply min-h-screen bg-amber-50;
+    overscroll-behavior: none;
+  }
+
+  * {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+@layer utilities {
+  .safe-bottom {
+    padding-bottom: calc(4rem + env(safe-area-inset-bottom));
+  }
+
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
