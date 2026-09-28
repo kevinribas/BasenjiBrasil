@@ -34,7 +34,7 @@ export default function LoginPage() {
       <div className="flex flex-col items-center gap-4">
         <div className="w-36 h-36 relative rounded-full overflow-hidden shadow-2xl border-4 border-amber-300">
           <Image
-            src="/images/logo.jfif"
+            src="/images/logo.png"
             alt="Basenji Brasil Logo"
             fill
             className="object-cover"

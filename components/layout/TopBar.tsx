@@ -17,7 +17,7 @@ export default function TopBar({ title, showLogo = false }: TopBarProps) {
           <Link href="/feed" className="flex items-center gap-2">
             <div className="w-8 h-8 relative rounded-full overflow-hidden border border-amber-200">
               <Image
-                src="/images/logo.jfif"
+                src="/images/logo.png"
                 alt="Basenji Brasil"
                 fill
                 className="object-cover"
