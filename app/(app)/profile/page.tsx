@@ -14,12 +14,15 @@ export default function ProfilePage() {
   const router = useRouter();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [basenjis, setBasenjis] = useState<Basenji[]>([]);
+  const [userId, setUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchData() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { router.push('/login'); return; }
+
+      setUserId(user.id);
 
       const [{ data: profileData }, { data: basenjiData }] = await Promise.all([
         supabase.from('profiles').select('*').eq('id', user.id).single(),
@@ -105,7 +108,11 @@ export default function ProfilePage() {
       ) : (
         <div className="flex flex-col gap-4">
           {basenjis.map((b) => (
-            <BasenjiCard key={b.id} basenji={{ ...b, profiles: profile ?? undefined }} />
+            <BasenjiCard
+              key={b.id}
+              basenji={{ ...b, profiles: profile ?? undefined }}
+              currentUserId={userId}
+            />
           ))}
         </div>
       )}

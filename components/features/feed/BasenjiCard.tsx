@@ -1,13 +1,19 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import { Basenji } from '@/types';
-import { MapPin, Venus, Mars } from 'lucide-react';
+import { MapPin, Venus, Mars, Clock, Pencil } from 'lucide-react';
+import { calcularIdade } from '@/lib/utils';
 
 interface BasenjiCardProps {
   basenji: Basenji;
+  /** ID do usuário logado — exibe botão de edição se for o dono */
+  currentUserId?: string | null;
 }
 
-export default function BasenjiCard({ basenji }: BasenjiCardProps) {
+export default function BasenjiCard({ basenji, currentUserId }: BasenjiCardProps) {
   const profile = basenji.profiles;
+  const idade = calcularIdade(basenji.data_nasc);
+  const isDono = currentUserId != null && currentUserId === basenji.dono_id;
 
   return (
     <article className="bg-white rounded-2xl overflow-hidden shadow-sm border border-stone-100 active:scale-[0.99] transition-transform">
@@ -25,6 +31,7 @@ export default function BasenjiCard({ basenji }: BasenjiCardProps) {
             🐕
           </div>
         )}
+
         {/* Sex badge */}
         <div className={`absolute top-3 right-3 flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold shadow
           ${basenji.sexo === 'macho' ? 'bg-blue-100 text-blue-700' : 'bg-pink-100 text-pink-700'}`}
@@ -32,6 +39,17 @@ export default function BasenjiCard({ basenji }: BasenjiCardProps) {
           {basenji.sexo === 'macho' ? <Mars className="w-3.5 h-3.5" /> : <Venus className="w-3.5 h-3.5" />}
           {basenji.sexo === 'macho' ? 'Macho' : 'Fêmea'}
         </div>
+
+        {/* Edit button — only for owner */}
+        {isDono && (
+          <Link
+            href={`/basenjis/${basenji.id}/edit`}
+            className="absolute top-3 left-3 flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold bg-white/90 text-stone-600 shadow hover:bg-white active:scale-95 transition-all"
+          >
+            <Pencil className="w-3 h-3" />
+            Editar
+          </Link>
+        )}
       </div>
 
       {/* Info */}
@@ -41,13 +59,21 @@ export default function BasenjiCard({ basenji }: BasenjiCardProps) {
             <h3 className="font-bold text-stone-800 text-lg leading-tight">{basenji.nome}</h3>
             <p className="text-sm text-stone-500">{basenji.cor}</p>
           </div>
-          {profile && (
+          {profile?.cidade && profile.estado && (
             <div className="flex items-center gap-1 text-xs text-stone-400 shrink-0">
               <MapPin className="w-3.5 h-3.5" />
               <span>{profile.cidade}, {profile.estado}</span>
             </div>
           )}
         </div>
+
+        {/* Idade */}
+        {idade && (
+          <div className="flex items-center gap-1 mt-1.5 text-xs text-amber-700">
+            <Clock className="w-3 h-3" />
+            <span>{idade}</span>
+          </div>
+        )}
 
         {basenji.bio && (
           <p className="mt-2 text-sm text-stone-600 line-clamp-2">{basenji.bio}</p>

@@ -10,11 +10,16 @@ export default function FeedPage() {
   const supabase = createClient();
   const [basenjis, setBasenjis] = useState<Basenji[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [filterEstado, setFilterEstado] = useState('');
   const [filterCidade, setFilterCidade] = useState('');
+  const [filterNome, setFilterNome] = useState('');
   const [showFilter, setShowFilter] = useState(false);
 
   useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setCurrentUserId(user?.id ?? null);
+    });
     fetchBasenjis();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filterEstado, filterCidade]);
@@ -45,30 +50,30 @@ export default function FeedPage() {
 
     let result = (data as Basenji[]) ?? [];
 
-    // Filtragem client-side: o PostgREST não suporta .eq() em colunas
-    // de tabelas relacionadas (joined) no nível da query pai.
     if (filterEstado) {
-      result = result.filter(
-        (b) => b.profiles?.estado === filterEstado
-      );
+      result = result.filter((b) => b.profiles?.estado === filterEstado);
     }
     if (filterCidade) {
       const termo = filterCidade.toLowerCase();
-      result = result.filter(
-        (b) => b.profiles?.cidade?.toLowerCase().includes(termo)
-      );
+      result = result.filter((b) => b.profiles?.cidade?.toLowerCase().includes(termo));
     }
 
     setBasenjis(result);
     setLoading(false);
   }
 
+  // Filtro de nome aplicado em tempo real (não re-fetch)
+  const basenjisFiltrados = filterNome
+    ? basenjis.filter((b) => b.nome.toLowerCase().includes(filterNome.toLowerCase()))
+    : basenjis;
+
   function clearFilters() {
     setFilterEstado('');
     setFilterCidade('');
+    setFilterNome('');
   }
 
-  const hasFilters = filterEstado || filterCidade;
+  const hasFilters = filterEstado || filterCidade || filterNome;
 
   return (
     <div className="px-4 pt-4 pb-2">
@@ -101,6 +106,17 @@ export default function FeedPage() {
       {/* Filter Panel */}
       {showFilter && (
         <div className="bg-white rounded-2xl p-4 shadow-sm border border-stone-100 mb-4 flex flex-col gap-3">
+          {/* Busca por nome */}
+          <div>
+            <label className="text-xs font-medium text-stone-500 uppercase tracking-wide mb-1 block">Nome do cão</label>
+            <input
+              type="search"
+              value={filterNome}
+              onChange={(e) => setFilterNome(e.target.value)}
+              placeholder="Buscar por nome do cão..."
+              className="w-full border border-stone-200 rounded-xl px-3 py-2 text-sm text-stone-700 bg-stone-50 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-400"
+            />
+          </div>
           <div>
             <label className="text-xs font-medium text-stone-500 uppercase tracking-wide mb-1 block">Estado</label>
             <select
@@ -134,7 +150,7 @@ export default function FeedPage() {
             <div key={i} className="bg-white rounded-2xl h-56 animate-pulse" />
           ))}
         </div>
-      ) : basenjis.length === 0 ? (
+      ) : basenjisFiltrados.length === 0 ? (
         <div className="text-center py-16 text-stone-400">
           <p className="text-4xl mb-3">🐕</p>
           <p className="font-medium">Nenhum Basenji encontrado</p>
@@ -142,8 +158,12 @@ export default function FeedPage() {
         </div>
       ) : (
         <div className="flex flex-col gap-4">
-          {basenjis.map((basenji) => (
-            <BasenjiCard key={basenji.id} basenji={basenji} />
+          {basenjisFiltrados.map((basenji) => (
+            <BasenjiCard
+              key={basenji.id}
+              basenji={basenji}
+              currentUserId={currentUserId}
+            />
           ))}
         </div>
       )}
