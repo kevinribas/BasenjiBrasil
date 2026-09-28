@@ -3,21 +3,27 @@ import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 
 export async function GET(request: Request) {
-  const { searchParams, origin } = new URL(request.url);
-  const code = searchParams.get('code');
-  const next = searchParams.get('next') ?? '/feed';
+  const requestUrl = new URL(request.url);
+  const code = requestUrl.searchParams.get('code');
+  const next = requestUrl.searchParams.get('next') ?? '/feed';
 
-  // Garante que o redirecionamento permaneça no domínio real de produção
+  // Mantém a consistência exata do origin/host que iniciou a chamada
   const forwardedHost = request.headers.get('x-forwarded-host');
-  const isLocalEnv = process.env.NODE_ENV === 'development';
-  const currentOrigin = isLocalEnv
-    ? origin
+  const isLocalhost = !forwardedHost && requestUrl.hostname.includes('localhost');
+  const origin = isLocalhost
+    ? requestUrl.origin
     : forwardedHost
       ? `https://${forwardedHost}`
-      : origin;
+      : requestUrl.origin;
 
   if (code) {
     const cookieStore = await cookies();
+    let response = NextResponse.next({
+      request: {
+        headers: request.headers,
+      },
+    });
+
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -27,13 +33,17 @@ export async function GET(request: Request) {
             return cookieStore.getAll();
           },
           setAll(cookiesToSet) {
-            try {
-              cookiesToSet.forEach(({ name, value, options }) =>
-                cookieStore.set(name, value, options)
-              );
-            } catch {
-              // Contexto de Server Component / Route Handler
-            }
+            cookiesToSet.forEach(({ name, value, options }) =>
+              cookieStore.set(name, value, options)
+            );
+            response = NextResponse.next({
+              request: {
+                headers: request.headers,
+              },
+            });
+            cookiesToSet.forEach(({ name, value, options }) =>
+              response.cookies.set(name, value, options)
+            );
           },
         },
       }
@@ -42,10 +52,8 @@ export async function GET(request: Request) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
 
     if (!error) {
-      // Valida se o perfil do utilizador já tem cidade e estado preenchidos
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      const { data: { user } } = await supabase.auth.getUser();
+      let destination = next;
 
       if (user) {
         const { data: profile } = await supabase
@@ -54,15 +62,22 @@ export async function GET(request: Request) {
           .eq('id', user.id)
           .maybeSingle();
 
-        const destination = !profile?.cidade || !profile?.estado ? '/onboarding' : next;
-        return NextResponse.redirect(`${currentOrigin}${destination}`);
+        if (!profile?.cidade || !profile?.estado) {
+          destination = '/onboarding';
+        }
       }
 
-      return NextResponse.redirect(`${currentOrigin}${next}`);
+      // Cria a resposta final de redirecionamento e transfere todos os cookies gravados
+      const redirectResponse = NextResponse.redirect(`${origin}${destination}`);
+      response.cookies.getAll().forEach((cookie) => {
+        redirectResponse.cookies.set(cookie.name, cookie.value, cookie);
+      });
+
+      return redirectResponse;
     }
 
-    console.error('Erro ao trocar código por sessão no Supabase:', error);
+    console.error('Erro ao trocar código por sessão:', error);
   }
 
-  return NextResponse.redirect(`${currentOrigin}/login?error=auth_callback_failed`);
+  return NextResponse.redirect(`${origin}/login?error=auth_callback_failed`);
 }
