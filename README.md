@@ -72,10 +72,21 @@ npm install
 npm run dev
 ```
 
-## Branch de Trabalho
+## Fluxo de Deploy e Branches
 
-Todo o desenvolvimento é feito na branch `develop`.
+O projeto adota um fluxo de Git Flow simplificado para garantir estabilidade e testes prévios:
+
+- **`develop`**: Branch ativa para desenvolvimento e testes locais (`npm run dev`). Todas as novas features, telas e correções devem ser criadas e integradas aqui.
+- **`main`**: Branch oficial de produção conectada aos deploys automáticos da Vercel. Apenas versões testadas, estáveis e homologadas em `develop` recebem merge para a `main`.
 
 ```bash
+# Para iniciar o trabalho no dia a dia:
+git checkout develop
+
+# Para promover versão estável à produção:
+git checkout main
+git merge develop
+git push origin main
 git checkout develop
 ```
+
