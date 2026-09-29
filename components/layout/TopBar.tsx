@@ -71,9 +71,6 @@ export default function TopBar({ title, showLogo = false }: TopBarProps) {
             >
               <Heart className="w-3.5 h-3.5 fill-rose-500 text-rose-500 shrink-0" />
               <span>Apoiar</span>
-              <span className="text-[10px] bg-rose-200/80 text-rose-800 font-bold px-1 py-0.2 rounded">
-                Pix
-              </span>
             </Link>
 
             <button
@@ -177,7 +174,29 @@ export default function TopBar({ title, showLogo = false }: TopBarProps) {
             <ChevronRight className="w-4 h-4 text-stone-400 group-hover:text-emerald-600 shrink-0 ml-1 transition-colors" />
           </Link>
 
-          {/* Apoiar o Projeto */}
+          {/* Meu Perfil & Cães */}
+          <Link
+            href="/profile"
+            onClick={() => setIsOpen(false)}
+            className="p-3 rounded-2xl border border-stone-100 hover:border-amber-200 hover:bg-amber-50/40 active:scale-[0.99] transition-all flex items-center justify-between group"
+          >
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="w-9 h-9 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                <User className="w-4 h-4 text-amber-600" />
+              </div>
+              <div className="min-w-0">
+                <h3 className="font-bold text-stone-800 text-xs group-hover:text-amber-800 transition-colors">
+                  Meu Perfil & Cães
+                </h3>
+                <p className="text-[11px] text-stone-500 truncate">
+                  Gerencie seus Basenjis cadastrados
+                </p>
+              </div>
+            </div>
+            <ChevronRight className="w-4 h-4 text-stone-400 group-hover:text-amber-600 shrink-0 ml-1 transition-colors" />
+          </Link>
+
+          {/* Apoiar o Projeto (destaque final da seção) */}
           <Link
             href="/apoiar"
             onClick={() => setIsOpen(false)}
@@ -202,28 +221,6 @@ export default function TopBar({ title, showLogo = false }: TopBarProps) {
               </div>
             </div>
             <ChevronRight className="w-4 h-4 text-stone-400 group-hover:text-rose-500 shrink-0 ml-1 transition-colors" />
-          </Link>
-
-          {/* Meu Perfil & Cães */}
-          <Link
-            href="/profile"
-            onClick={() => setIsOpen(false)}
-            className="p-3 rounded-2xl border border-stone-100 hover:border-amber-200 hover:bg-amber-50/40 active:scale-[0.99] transition-all flex items-center justify-between group"
-          >
-            <div className="flex items-center gap-3 min-w-0">
-              <div className="w-9 h-9 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                <User className="w-4 h-4 text-amber-600" />
-              </div>
-              <div className="min-w-0">
-                <h3 className="font-bold text-stone-800 text-xs group-hover:text-amber-800 transition-colors">
-                  Meu Perfil & Cães
-                </h3>
-                <p className="text-[11px] text-stone-500 truncate">
-                  Gerencie seus Basenjis cadastrados
-                </p>
-              </div>
-            </div>
-            <ChevronRight className="w-4 h-4 text-stone-400 group-hover:text-amber-600 shrink-0 ml-1 transition-colors" />
           </Link>
 
           {/* Links Institucionais */}
