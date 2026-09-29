@@ -45,6 +45,48 @@ export function calcularIdade(dataNasc: string | null | undefined): string | nul
   return anos === 1 ? '1 ano' : `${anos} anos`;
 }
 
+// ─── Tempo relativo amigável ─────────────────────────────────────────────────
+
+/**
+ * Converte data ISO em formato relativo amigável em português.
+ * Exemplos: "agora mesmo", "há 5 min", "há 2 horas", "ontem", "há 3 dias".
+ */
+export function formatarTempoRelativo(isoString: string): string {
+  const data = new Date(isoString);
+  if (isNaN(data.getTime())) return '';
+
+  const agora = new Date();
+  const diffSegundos = Math.floor((agora.getTime() - data.getTime()) / 1000);
+
+  if (diffSegundos < 60) {
+    return 'agora mesmo';
+  }
+  const diffMinutos = Math.floor(diffSegundos / 60);
+  if (diffMinutos < 60) {
+    return `há ${diffMinutos} min`;
+  }
+  const diffHoras = Math.floor(diffMinutos / 60);
+  if (diffHoras < 24) {
+    return diffHoras === 1 ? 'há 1 hora' : `há ${diffHoras}h`;
+  }
+  const diffDias = Math.floor(diffHoras / 24);
+  if (diffDias === 1) {
+    return 'ontem';
+  }
+  if (diffDias < 7) {
+    return `há ${diffDias} dias`;
+  }
+  const diffSemanas = Math.floor(diffDias / 7);
+  if (diffSemanas < 4) {
+    return diffSemanas === 1 ? 'há 1 semana' : `há ${diffSemanas} sem`;
+  }
+  const diffMeses = Math.floor(diffDias / 30);
+  if (diffMeses < 12) {
+    return diffMeses === 1 ? 'há 1 mês' : `há ${diffMeses} meses`;
+  }
+  return 'há mais de 1 ano';
+}
+
 // ─── Helpers de Supabase Storage ─────────────────────────────────────────────
 
 /**

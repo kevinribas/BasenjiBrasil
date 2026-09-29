@@ -21,6 +21,7 @@ export default function PublicLegalLayout({
                   alt="Basenji Brasil"
                   fill
                   className="object-contain"
+                  sizes="36px"
                   priority
                 />
               </div>

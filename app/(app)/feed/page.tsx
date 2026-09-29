@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { Basenji, ESTADOS_BR } from '@/types';
 import BasenjiCard from '@/components/features/feed/BasenjiCard';
@@ -17,15 +17,7 @@ export default function FeedPage() {
   const [filterNome, setFilterNome] = useState('');
   const [showFilter, setShowFilter] = useState(false);
 
-  useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      setCurrentUserId(user?.id ?? null);
-    });
-    fetchBasenjis();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filterEstado, filterCidade]);
-
-  async function fetchBasenjis() {
+  const fetchBasenjis = useCallback(async () => {
     setLoading(true);
 
     // Usa alias explícito 'profiles:dono_id' para o join pela FK correta
@@ -61,7 +53,16 @@ export default function FeedPage() {
 
     setBasenjis(result);
     setLoading(false);
-  }
+  }, [filterEstado, filterCidade]);
+
+  useEffect(() => {
+    async function loadUser() {
+      const { data: authData } = await supabase.auth.getUser();
+      setCurrentUserId(authData.user?.id ?? null);
+    }
+    loadUser();
+    fetchBasenjis();
+  }, [fetchBasenjis]);
 
   // Filtro de nome aplicado em tempo real (não re-fetch)
   const basenjisFiltrados = filterNome

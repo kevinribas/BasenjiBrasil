@@ -34,6 +34,7 @@ export default function BasenjiCard({ basenji, currentUserId }: BasenjiCardProps
             alt={basenji.nome}
             fill
             className="object-cover group-hover:scale-105 transition-transform duration-300"
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 400px"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-5xl">
@@ -100,7 +101,13 @@ export default function BasenjiCard({ basenji, currentUserId }: BasenjiCardProps
           <div className="flex items-center gap-2 mt-3 pt-3 border-t border-stone-100">
             <div className="w-7 h-7 relative rounded-full overflow-hidden bg-amber-100 shrink-0">
               {profile.avatar_url ? (
-                <Image src={profile.avatar_url} alt={profile.nome} fill className="object-cover" />
+                <Image
+                  src={profile.avatar_url}
+                  alt={profile.nome}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 48px, 64px"
+                />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-sm">👤</div>
               )}
