@@ -5,9 +5,10 @@ import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { createClient } from '@/lib/supabase/client';
-import { ESTADOS_BR, type Basenji } from '@/types';
+import { ESTADOS_BR, type Basenji, type CondicaoSaude } from '@/types';
 import { extrairPathStorage, gerarStoragePath } from '@/lib/utils';
 import ImageCropper from '@/components/ui/ImageCropper';
+import HealthConditionsEditor from '@/components/features/basenjis/HealthConditionsEditor';
 import {
   ArrowLeft, Camera, Loader2, Trash2, X, AlertTriangle,
 } from 'lucide-react';
@@ -36,6 +37,7 @@ export default function EditBasenjiPage() {
   const [cor, setCor] = useState('');
   const [bio, setBio] = useState('');
   const [dataNasc, setDataNasc] = useState('');
+  const [condicoesSaude, setCondicoesSaude] = useState<CondicaoSaude[]>([]);
 
   // ── Foto
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
@@ -82,6 +84,7 @@ export default function EditBasenjiPage() {
       setBio(b.bio ?? '');
       setDataNasc(b.data_nasc ?? '');
       setPhotoPreview(b.foto_url ?? null);
+      setCondicoesSaude(b.condicoes_saude ?? []);
       setLoadingData(false);
     }
     load();
@@ -170,6 +173,7 @@ export default function EditBasenjiPage() {
         bio: bio.trim() || null,
         data_nasc: dataNasc || null,
         foto_url,
+        condicoes_saude: condicoesSaude,
       })
       .eq('id', id)
       .eq('dono_id', currentUserId); // garante RLS no cliente também
@@ -418,6 +422,12 @@ export default function EditBasenjiPage() {
             />
             <p className="text-xs text-stone-400 text-right mt-1">{bio.length}/280</p>
           </Field>
+
+          {/* ── Saúde & Cuidados (Opcional) ── */}
+          <HealthConditionsEditor
+            condicoes={condicoesSaude}
+            onChange={setCondicoesSaude}
+          />
 
           {/* ── Erro ── */}
           {error && (

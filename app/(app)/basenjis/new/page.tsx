@@ -6,6 +6,8 @@ import { createClient } from '@/lib/supabase/client';
 import { Camera, Loader2, X } from 'lucide-react';
 import Image from 'next/image';
 import ImageCropper from '@/components/ui/ImageCropper';
+import HealthConditionsEditor from '@/components/features/basenjis/HealthConditionsEditor';
+import { CondicaoSaude } from '@/types';
 import { gerarStoragePath } from '@/lib/utils';
 
 type CropperState = { open: false } | { open: true; rawSrc: string };
@@ -20,6 +22,7 @@ export default function NewBasenjiPage() {
   const [cor, setCor] = useState('');
   const [bio, setBio] = useState('');
   const [dataNasc, setDataNasc] = useState('');
+  const [condicoesSaude, setCondicoesSaude] = useState<CondicaoSaude[]>([]);
 
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoBlob, setPhotoBlob] = useState<Blob | null>(null);
@@ -106,6 +109,7 @@ export default function NewBasenjiPage() {
       bio: bio.trim() || null,
       data_nasc: dataNasc || null,
       foto_url,
+      condicoes_saude: condicoesSaude,
     });
 
     if (insertError) {
@@ -251,6 +255,12 @@ export default function NewBasenjiPage() {
             />
             <p className="text-xs text-stone-400 text-right mt-1">{bio.length}/280</p>
           </div>
+
+          {/* ── Saúde & Cuidados (Opcional) ── */}
+          <HealthConditionsEditor
+            condicoes={condicoesSaude}
+            onChange={setCondicoesSaude}
+          />
 
           {error && (
             <div className="flex items-start gap-2 bg-red-50 border border-red-200 text-red-600 rounded-xl px-4 py-3 text-sm">

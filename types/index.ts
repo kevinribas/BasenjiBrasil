@@ -8,6 +8,28 @@ export interface Profile {
   created_at: string;
 }
 
+export type CategoriaSaude =
+  | 'sensibilidade_digestiva'
+  | 'fanconi'
+  | 'figado_ipsid'
+  | 'alergias_pele'
+  | 'renal'
+  | 'outra';
+
+export type StatusCondicaoSaude =
+  | 'em_tratamento'
+  | 'controlado'
+  | 'resolvido'
+  | 'preventivo';
+
+export interface CondicaoSaude {
+  categoria: CategoriaSaude;
+  titulo: string;
+  status: StatusCondicaoSaude;
+  descricao?: string;
+  compartilhar_comunidade: boolean;
+}
+
 export interface Basenji {
   id: string;
   dono_id: string;
@@ -18,8 +40,76 @@ export interface Basenji {
   foto_url: string | null;
   bio: string | null;
   created_at: string;
+  condicoes_saude?: CondicaoSaude[] | null;
   profiles?: Profile;
 }
+
+export const CONDICOES_PREDEFINIDAS: {
+  categoria: CategoriaSaude;
+  titulo: string;
+  descricaoCurta: string;
+}[] = [
+  {
+    categoria: 'sensibilidade_digestiva',
+    titulo: 'Sensibilidade Digestiva / Diarreia Recorrente',
+    descricaoCurta: 'Muito comum em Basenjis, exigindo ração de alta digestibilidade ou alimentação natural guiada.',
+  },
+  {
+    categoria: 'fanconi',
+    titulo: 'Síndrome de Fanconi',
+    descricaoCurta: 'Doença genética renal característica da raça; monitoramento com tiras de glicosúria é fundamental.',
+  },
+  {
+    categoria: 'figado_ipsid',
+    titulo: 'Problemas Hepáticos / Intestinais (IPSID)',
+    descricaoCurta: 'Doença imunoproliferativa do intestino delgado, requer acompanhamento contínuo.',
+  },
+  {
+    categoria: 'alergias_pele',
+    titulo: 'Alergias de Pele / Alimentar',
+    descricaoCurta: 'Dermatites atópicas ou intolerâncias alimentares frequentes.',
+  },
+  {
+    categoria: 'renal',
+    titulo: 'Problemas Renais',
+    descricaoCurta: 'Nefropatias ou necessidade de controle de hidratação e função renal.',
+  },
+  {
+    categoria: 'outra',
+    titulo: 'Outra Condição',
+    descricaoCurta: 'Outra condição acompanhada pelo médico veterinário.',
+  },
+];
+
+export const STATUS_SAUDE_CONFIG: Record<
+  StatusCondicaoSaude,
+  { label: string; bg: string; text: string; border: string }
+> = {
+  em_tratamento: {
+    label: 'Em tratamento',
+    bg: 'bg-amber-50',
+    text: 'text-amber-800',
+    border: 'border-amber-200',
+  },
+  controlado: {
+    label: 'Controlado',
+    bg: 'bg-emerald-50',
+    text: 'text-emerald-800',
+    border: 'border-emerald-200',
+  },
+  resolvido: {
+    label: 'Resolvido',
+    bg: 'bg-blue-50',
+    text: 'text-blue-800',
+    border: 'border-blue-200',
+  },
+  preventivo: {
+    label: 'Preventivo',
+    bg: 'bg-purple-50',
+    text: 'text-purple-800',
+    border: 'border-purple-200',
+  },
+};
 
 export interface Event {
   id: string;

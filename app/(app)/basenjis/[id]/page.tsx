@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
-import { Basenji } from '@/types';
+import { Basenji, STATUS_SAUDE_CONFIG } from '@/types';
 import { calcularIdade } from '@/lib/utils';
 import {
   ArrowLeft,
@@ -17,6 +17,7 @@ import {
   ZoomIn,
   X,
   Share2,
+  HeartPulse,
 } from 'lucide-react';
 
 export default function BasenjiDetailPage() {
@@ -315,6 +316,73 @@ export default function BasenjiDetailPage() {
             </p>
           </div>
         )}
+
+        {/* ── Histórico de Saúde & Cuidados ────────────────────────────────── */}
+        {(() => {
+          const condicoesVisiveis = (dog.condicoes_saude ?? []).filter(
+            (c) => c.compartilhar_comunidade || isDono
+          );
+          if (condicoesVisiveis.length === 0) return null;
+
+          return (
+            <div className="bg-white rounded-2xl p-4 border border-stone-100 shadow-sm flex flex-col gap-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+                    <HeartPulse className="w-4 h-4 text-emerald-600" />
+                  </div>
+                  <h2 className="text-sm font-bold text-stone-800">
+                    Histórico de Saúde & Cuidados
+                  </h2>
+                </div>
+                <span className="text-[11px] font-semibold text-stone-400 bg-stone-50 px-2 py-0.5 rounded-full border border-stone-100">
+                  {condicoesVisiveis.length}{' '}
+                  {condicoesVisiveis.length === 1 ? 'registro' : 'registros'}
+                </span>
+              </div>
+
+              <div className="flex flex-col gap-2.5">
+                {condicoesVisiveis.map((cond, idx) => {
+                  const cfg =
+                    STATUS_SAUDE_CONFIG[cond.status] ?? STATUS_SAUDE_CONFIG.controlado;
+                  return (
+                    <div
+                      key={idx}
+                      className="p-3 rounded-xl bg-stone-50 border border-stone-100 flex flex-col gap-1.5"
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <span className="text-xs font-bold text-stone-800 leading-snug">
+                          {cond.titulo}
+                        </span>
+                        <span
+                          className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border shrink-0 ${cfg.bg} ${cfg.text} ${cfg.border}`}
+                        >
+                          {cfg.label}
+                        </span>
+                      </div>
+
+                      {cond.descricao && (
+                        <p className="text-xs text-stone-600 leading-relaxed whitespace-pre-line">
+                          {cond.descricao}
+                        </p>
+                      )}
+
+                      {isDono && !cond.compartilhar_comunidade && (
+                        <span className="text-[10px] text-stone-400 italic">
+                          🔒 Visível apenas para você (privado)
+                        </span>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+
+              <p className="text-[11px] text-stone-400 bg-stone-50/80 p-2.5 rounded-xl border border-stone-100 leading-relaxed">
+                ℹ️ Informações compartilhadas pela comunidade. Não substituem orientação veterinária profissional.
+              </p>
+            </div>
+          );
+        })()}
 
         {/* ── Cartão do Tutor ─────────────────────────────────────────────── */}
         {dog.profiles && (
