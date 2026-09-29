@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { Profile, Basenji } from '@/types';
 import Image from 'next/image';
-import { LogOut, MapPin, PlusCircle, Heart, ChevronRight } from 'lucide-react';
+import { LogOut, MapPin, PlusCircle, Heart, ChevronRight, Pencil } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import BasenjiCard from '@/components/features/feed/BasenjiCard';
@@ -75,11 +75,24 @@ export default function ProfilePage() {
           </div>
           <button
             onClick={handleSignOut}
-            className="flex items-center gap-1 text-xs text-stone-400 bg-stone-100 px-2.5 py-1.5 rounded-lg active:bg-stone-200 transition-colors shrink-0"
+            className="flex items-center gap-1 text-xs text-stone-400 bg-stone-100 hover:text-stone-600 px-2.5 py-1.5 rounded-lg active:bg-stone-200 transition-colors shrink-0"
+            title="Sair da conta"
           >
             <LogOut className="w-3.5 h-3.5" />
             Sair
           </button>
+        </div>
+
+        {/* Ações do Usuário: Editar Perfil */}
+        <div className="mt-4 pt-3 border-t border-stone-100 flex items-center justify-between">
+          <span className="text-[11px] text-stone-400">Conta conectada</span>
+          <Link
+            href="/perfil/editar"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-stone-700 bg-stone-50 hover:bg-stone-100 border border-stone-200/80 px-3 py-1.5 rounded-xl active:scale-95 transition-all shadow-xs"
+          >
+            <Pencil className="w-3.5 h-3.5 text-amber-600" />
+            <span>Editar Perfil</span>
+          </Link>
         </div>
       </div>
 
