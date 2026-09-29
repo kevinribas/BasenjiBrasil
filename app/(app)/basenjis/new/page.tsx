@@ -150,7 +150,13 @@ export default function NewBasenjiPage() {
             />
             {photoPreview ? (
               <div className="relative w-32 h-32 rounded-2xl overflow-hidden shadow-md">
-                <Image src={photoPreview} alt="Preview" fill className="object-cover" />
+                <Image
+                  src={photoPreview}
+                  alt="Preview"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 128px, 128px"
+                />
                 <div className="absolute inset-0 flex items-end justify-center gap-2 pb-2 bg-gradient-to-t from-black/50 to-transparent">
                   <label
                     htmlFor="photo-upload"

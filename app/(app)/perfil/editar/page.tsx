@@ -259,6 +259,7 @@ export default function EditProfilePage() {
                     alt={nome || 'Avatar'}
                     fill
                     className="object-cover"
+                    sizes="(max-width: 768px) 96px, 128px"
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-4xl">

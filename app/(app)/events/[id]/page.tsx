@@ -357,6 +357,7 @@ export default function EventDetailPage() {
                     alt={event.profiles.nome}
                     fill
                     className="object-cover"
+                    sizes="(max-width: 768px) 48px, 64px"
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-sm">
@@ -484,6 +485,7 @@ export default function EventDetailPage() {
                           alt={profile.nome}
                           fill
                           className="object-cover"
+                          sizes="(max-width: 768px) 48px, 64px"
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-lg">
@@ -519,6 +521,7 @@ export default function EventDetailPage() {
                               alt={d.nome}
                               fill
                               className="object-cover"
+                              sizes="(max-width: 768px) 48px, 64px"
                             />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center text-[10px]">

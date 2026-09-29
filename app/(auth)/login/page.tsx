@@ -39,6 +39,7 @@ export default function LoginPage() {
             alt="Basenji Brasil Logo"
             fill
             className="object-contain p-1"
+            sizes="144px"
             priority
           />
         </div>

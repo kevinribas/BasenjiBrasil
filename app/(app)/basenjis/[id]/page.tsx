@@ -395,6 +395,7 @@ export default function BasenjiDetailPage() {
                     alt={dog.profiles.nome}
                     fill
                     className="object-cover"
+                    sizes="(max-width: 768px) 48px, 64px"
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-lg">

@@ -75,6 +75,7 @@ export default function TopBar({ title, showLogo = false }: TopBarProps) {
                   alt="Basenji Brasil"
                   fill
                   className="object-contain"
+                  sizes="32px"
                   priority
                 />
               </div>
@@ -138,6 +139,7 @@ export default function TopBar({ title, showLogo = false }: TopBarProps) {
                 alt="Basenji Brasil"
                 fill
                 className="object-contain"
+                sizes="32px"
               />
             </div>
             <div>
@@ -381,6 +383,7 @@ export default function TopBar({ title, showLogo = false }: TopBarProps) {
                             alt={item.titulo}
                             fill
                             className="object-cover"
+                            sizes="(max-width: 768px) 48px, 64px"
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center text-sm">
