@@ -105,15 +105,16 @@ export default function EventDetailPage() {
     } finally {
       setLoading(false);
     }
-  }, [id, supabase]);
+  }, [id]);
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      setUserId(user?.id ?? null);
-    });
-
+    async function loadUser() {
+      const { data: authData } = await supabase.auth.getUser();
+      setUserId(authData.user?.id ?? null);
+    }
+    loadUser();
     fetchEventData();
-  }, [fetchEventData, supabase]);
+  }, [fetchEventData]);
 
   // Lista de confirmados (status === 'going')
   const confirmedAttendees = useMemo(() => {

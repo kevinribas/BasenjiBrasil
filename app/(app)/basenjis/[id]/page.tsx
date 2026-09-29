@@ -33,11 +33,10 @@ export default function BasenjiDetailPage() {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      setCurrentUserId(user?.id ?? null);
-    });
+    async function load() {
+      const { data: authData } = await supabase.auth.getUser();
+      setCurrentUserId(authData.user?.id ?? null);
 
-    async function fetchDog() {
       if (!id) return;
       setLoading(true);
 
@@ -65,8 +64,9 @@ export default function BasenjiDetailPage() {
       setLoading(false);
     }
 
-    fetchDog();
-  }, [id, supabase]);
+    load();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
 
   // Tecla Esc para fechar o zoom
   useEffect(() => {

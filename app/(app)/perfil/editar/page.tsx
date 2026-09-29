@@ -83,7 +83,8 @@ export default function EditProfilePage() {
     }
 
     loadProfile();
-  }, [router, supabase]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [router]);
 
   // ── Seleção e recorte de nova foto
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {

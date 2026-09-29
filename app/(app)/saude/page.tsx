@@ -63,7 +63,8 @@ export default function SaudeComunitariaPage() {
     }
 
     loadData();
-  }, [supabase]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Total de cães
   const totalDogs = dogs.length;

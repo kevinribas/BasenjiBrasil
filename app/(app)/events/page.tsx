@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { Event } from '@/types';
 import EventCard from '@/components/features/events/EventCard';
@@ -13,17 +13,7 @@ export default function EventsPage() {
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState<string | null>(null);
 
-  useEffect(() => {
-    async function init() {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUserId(user?.id ?? null);
-      await fetchEvents();
-    }
-    init();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  async function fetchEvents() {
+  const fetchEvents = useCallback(async () => {
     setLoading(true);
     const { data } = await supabase
       .from('events')
@@ -36,7 +26,16 @@ export default function EventsPage() {
 
     setEvents((data as Event[]) ?? []);
     setLoading(false);
-  }
+  }, []);
+
+  useEffect(() => {
+    async function init() {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUserId(user?.id ?? null);
+      await fetchEvents();
+    }
+    init();
+  }, [fetchEvents]);
 
   async function toggleAttendance(eventId: string, currentlyGoing: boolean) {
     if (!userId) return;

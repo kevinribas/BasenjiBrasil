@@ -134,7 +134,7 @@ export function useNotifications() {
     } finally {
       setLoading(false);
     }
-  }, [supabase]);
+  }, []);
 
   const markAsRead = useCallback(() => {
     if (typeof window !== 'undefined') {
@@ -145,6 +145,13 @@ export function useNotifications() {
 
   useEffect(() => {
     fetchNotifications();
+
+    // Polling a cada 120 segundos (2 minutos) com cleanup garantido
+    const interval = setInterval(() => {
+      fetchNotifications();
+    }, 120_000);
+
+    return () => clearInterval(interval);
   }, [fetchNotifications]);
 
   return {
